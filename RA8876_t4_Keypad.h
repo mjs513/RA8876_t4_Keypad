@@ -49,8 +49,6 @@
 
 #include "RA8876_Config_SPI.h"
 #include <RA8876_t3.h>
-//#include <ILI9341_t3.h> 
-// #include <ILI9341_t3_Controls.h> 	// button library
 #include <XPT2046_RA8876.h>
 
 #define BTNS 30

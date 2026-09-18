@@ -1,6 +1,5 @@
 //  Modified for use with BuyDisplay RA8876 10.1" TFT 09-18-26 Warren Watson
 // required libraries
-//#include "ILI9341_t3.h"  // high speed display that ships with Teensy
 #include "RA8876_Config_SPI.h"
 #include <RA8876_t3.h>
 #include "font_Arial.h"  // custom fonts that ships with ILI9341_t3.h
@@ -8,12 +7,6 @@
 #include <RA8876_t4_Keypad.h>
 #include <XPT2046_RA8876.h>
 
-// For Teensy
-//#define TFT_CS 10
-//#define TFT_DC 9
-//#define TFT_RST 8
-//#define T_CS 0
-//#define T_IRQ 1
 
 #define CS_PIN  7
 //XPT2046 ts(CS_PIN);
@@ -26,35 +19,16 @@ RA8876_t3 Display = RA8876_t3(RA8876_CS, RA8876_RESET); //Using standard SPI pin
 // easy way to include fonts but change globally
 #define FONT_BUTTON Arial_16_Bold  // font for keypad buttons
 
-
-// you know the drill
-//ILI9341_t3 Display(TFT_CS, TFT_DC, TFT_RST);
-
 //XPT2046_Touchscreen Touch(T_CS, T_IRQ);
 XPT2046 Touch(CS_PIN, TIRQ_PIN);
-
 
 // create some keypad objects
 NumberPad MyNumberPad(&Display, &Touch);
 
 // you will probably need to calibrate your screen, these are coordinates of presses on display
 uint16_t ScreenLeft = 1921, ScreenRight = 171, ScreenTop = 1974, ScreenBottom = 70;
-//uint16_t ScreenLeft = 1921, ScreenRight = 1974, ScreenTop = 171, ScreenBottom = 70;
 
 void setup() {
-/*
-  Serial.begin(9600);
-
-  // fire up the display
-  Display.begin();
-
-  Display.setRotation(3);
-
-  Touch.begin();
-  Touch.setRotation(3);
-
-  Display.fillScreen(ILI9341_BLACK);
-*/
   Serial.begin(115200);
 
 #if defined(USE_SPI_47000000)

@@ -27,7 +27,6 @@
 #include "RA8876_t4_Keypad.h"
 #include "RA8876_Config_SPI.h"
 #include <RA8876_t3.h>
-//#include <ILI9341_t3.h>
 #include <XPT2046_RA8876.h>
 
 
@@ -511,7 +510,7 @@ bool NumberPad::Pressed(BUTTON *temp) {
 void NumberPad::ProcessTouch() {
   if (t->isTouching()) {
     t->getPosition(BtnX, BtnY);
-//#define debug 1
+
 #ifdef debug
     Serial.print("real coordinates:");
     Serial.print(BtnX);
@@ -519,10 +518,6 @@ void NumberPad::ProcessTouch() {
     Serial.println(BtnY);
 #endif
 
-    //different displays may require reversing last 2 args
-//    BtnX = map(BtnX, screenX0, screenX320, 0, 320);
-//    BtnY = map(BtnY, screenY0, screenY240,0, 240);
-//    d->fillCircle(BtnX, BtnY,2, 255);
 #ifdef debug
     Serial.print(" , Mapped coordinates:");
     Serial.print(BtnX);
@@ -1102,16 +1097,6 @@ void Keyboard::ProcessTouch() {
      Serial.print(" ,");
      Serial.print (BtnY);
 #endif
-
-
-//	  screenX0 = ScreenLeft;
-//  screenX320 = ScreenRight;
-//  screenY0 = ScreenTop;
-//  screenY240 = ScreenBottom;
-  
-//    BtnX = map(BtnX, screenX0, screenX320, 0, 320);
-//    BtnY = map(BtnY, screenY0, screenY240, 0, 240);
-	
 
 //#ifdef debug
      Serial.print(" , Mapped coordinates:");
