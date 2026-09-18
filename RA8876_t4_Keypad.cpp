@@ -24,7 +24,7 @@
   Modified for use with BuyDisplay RA8876 10.1" TFT 09-18-26 Warren Watson
 */
 
-#include "ILI9341_t3_Keypad.h"
+#include "RA8876_t4_Keypad.h"
 #include "RA8876_Config_SPI.h"
 #include <RA8876_t3.h>
 //#include <ILI9341_t3.h>
