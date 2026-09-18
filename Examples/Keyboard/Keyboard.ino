@@ -5,7 +5,7 @@
 #include <RA8876_t3.h>
 #include "font_Arial.h"  // custom fonts that ships with ILI9341_t3.h
 #include <font_ArialBold.h>
-#include <ILI9341_t3_Keypad.h>
+#include <RA8876_t4_Keypad.h>
 #include <XPT2046_RA8876.h>
 
 // pins for LED and select button on encoder
