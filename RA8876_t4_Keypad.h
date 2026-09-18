@@ -51,6 +51,8 @@
 #include <RA8876_t3.h>
 #include <XPT2046_RA8876.h>
 
+#define BUTTON_DEBUG false // Set to "true" for button mapping. 
+
 #define BTNS 30
 #define BTNM 2
 

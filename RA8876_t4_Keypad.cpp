@@ -511,14 +511,14 @@ void NumberPad::ProcessTouch() {
   if (t->isTouching()) {
     t->getPosition(BtnX, BtnY);
 
-#ifdef debug
+#if BUTTON_DEBUG == true 
     Serial.print("real coordinates:");
     Serial.print(BtnX);
     Serial.print(" ,");
     Serial.println(BtnY);
 #endif
 
-#ifdef debug
+#if BUTTON_DEBUG == true 
     Serial.print(" , Mapped coordinates:");
     Serial.print(BtnX);
     Serial.print(" ,");
@@ -1091,19 +1091,19 @@ void Keyboard::ProcessTouch() {
 	if (t->isTouching()){		  
 		t->getPosition(BtnX, BtnY);
 
-#ifdef debug
+#if BUTTON_DEBUG == true
      Serial.print(" real coordinates:");
      Serial.print(BtnX);
      Serial.print(" ,");
      Serial.print (BtnY);
 #endif
 
-//#ifdef debug
+#if BUTTON_DEBUG == true
      Serial.print(" , Mapped coordinates:");
      Serial.print(BtnX);
      Serial.print(" ,");
      Serial.println(BtnY);
 //    d->fillCircle(BtnX, BtnY, 2, COLOR65K_RED);
-//#endif
+#endif
   }
 }
