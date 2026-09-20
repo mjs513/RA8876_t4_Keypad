@@ -27,14 +27,22 @@
 #include "RA8876_t4_Keypad.h"
 #include "RA8876_Config_SPI.h"
 #include <RA8876_t3.h>
+#if __has_include("XPT2046_RA8876.h")
 #include <XPT2046_RA8876.h>
+#define XPT
+#endif
 
 
+#if __has_include("XPT2046_RA8876.h")
 NumberPad::NumberPad(RA8876_t3 *Display, XPT2046 *Touch) {
   d = Display;
   t = Touch;
 }
-
+#else
+NumberPad::NumberPad(RA8876_t3 *Display) {
+  d = Display;
+}
+#endif
 
 void NumberPad::init(uint16_t BackColor, uint16_t TextColor, uint16_t ButtonColor, uint16_t BorderColor, uint16_t PressedTextColor, uint16_t PressedButtonColor, uint16_t PressedBorderColor,
    const ILI9341_t3_font_t &ButtonFont) {
@@ -246,8 +254,11 @@ void NumberPad::getInput() {
   }
   
   while (KeepIn) {
-
+#if defined(XPT)
     if (t->isTouching()) {
+#else
+		if (d->touched()) {
+#endif
 
       ProcessTouch();
       for (b = 0; b < 15; b++) {
@@ -477,9 +488,11 @@ bool NumberPad::Pressed(BUTTON *temp) {
 		analogWrite(clickpin, 0);
 	}
 
-
+#if defined(XPT)
       while (t->isTouching()) {
-
+#else
+			while (d->touched()) {
+#endif
         if (((BtnX > temp->x) && (BtnX < (temp->x + temp->w))) && ((BtnY > temp->y) && (BtnY < (temp->y + temp->h)))) {
           if (redraw) {
             DrawButton(temp, BUTTON_PRESSED);
@@ -508,8 +521,19 @@ bool NumberPad::Pressed(BUTTON *temp) {
 
 
 void NumberPad::ProcessTouch() {
-  if (t->isTouching()) {
-    t->getPosition(BtnX, BtnY);
+#if defined(XPT)
+	if (t->isTouching()){		  
+		t->getPosition(BtnX, BtnY);
+		
+#else
+	if (d->touched()) { //if touched(true) detach isr
+		d->updateTS();//now we have the data inside library
+    uint16_t coordinates[1][2];//to hold coordinates
+    d->getTScoordinates(coordinates);//done
+    BtnX =  d->width() - coordinates[0][0];
+    BtnY =  d->height() - coordinates[0][1];
+    d->enableCapISR();//rearm ISR if needed (touched(true))
+#endif
 
 #if BUTTON_DEBUG == true 
     Serial.print("real coordinates:");
@@ -534,11 +558,17 @@ void NumberPad::ProcessTouch() {
 // keyboard
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+#if __has_include("XPT2046_RA8876.h")
 Keyboard::Keyboard(RA8876_t3 *Display, XPT2046 *Touch) {
   d = Display;
   t = Touch;
 }
+#else
+Keyboard::Keyboard(RA8876_t3 *Display) {
+  d = Display;
+}
+#endif
+
 void Keyboard::init(uint16_t BackColor, uint16_t TextColor, uint16_t ButtonColor, uint16_t BorderColor, uint16_t PressedTextColor, uint16_t PressedButtonColor, uint16_t PressedBorderColor, const ILI9341_t3_font_t &ButtonFont) {
   kcolor = BackColor;
   tcolor = TextColor;
@@ -552,7 +582,7 @@ void Keyboard::init(uint16_t BackColor, uint16_t TextColor, uint16_t ButtonColor
   bfont = ButtonFont;
   clickpin = -1;
   rad = 0;
-  Size = 30;
+  Size = BUTTON_SIZE;
   screenX0 = 185, screenX320 = 3755, screenY0 = 350, screenY240 = 3785;
     
 }
@@ -660,7 +690,11 @@ bool Keyboard::Pressed(BUTTON *temp, uint8_t ASCII) {
 	  analogWrite(clickpin, 0);
 	}
 
+#if defined(XPT)
       while (t->isTouching()) {
+#else
+			while (d->touched()) {
+#endif
         if (((BtnX > temp->x) && (BtnX < (temp->x + (Size * temp->w)))) && ((BtnY > temp->y) && (BtnY < (temp->y + Size)))) {
           if (redraw) {
             DrawButton(temp, ASCII, BUTTON_PRESSED);
@@ -851,8 +885,11 @@ strcpy(dn, data);
   }
 
   while (KeepIn) {
-
+#if defined(XPT)
     if (t->isTouching()) {
+#else
+		if (d->touched()) {
+#endif
 
       ProcessTouch();
       //go thru all the KeyboardBtn, checking if they were pressed
@@ -1061,8 +1098,11 @@ strcpy(dn, data);
         KeepIn = false;
         break;
       }
-
-      delay(10);
+#if defined(XPT)
+			delay(10);
+#else
+      delay(50);
+#endif
     }
   }
 
@@ -1087,9 +1127,23 @@ clickpin = Value;
 }
 
 void Keyboard::ProcessTouch() {
-
+#if defined(XPT)
 	if (t->isTouching()){		  
 		t->getPosition(BtnX, BtnY);
+		
+#else
+{
+	//if (d->touched()) { //if touched(true) detach isr
+		d->updateTS();//now we have the data inside library
+    uint16_t coordinates[1][2];//to hold coordinates
+    d->getTScoordinates(coordinates);//done
+		if(d->getTouches() > 0) {
+			BtnX =  d->width() - coordinates[0][0];
+			BtnY =  d->height() - coordinates[0][1];
+		}
+    d->enableCapISR();//rearm ISR if needed (touched(true))
+	delay(10);
+#endif
 
 #if BUTTON_DEBUG == true
      Serial.print(" real coordinates:");
@@ -1103,7 +1157,7 @@ void Keyboard::ProcessTouch() {
      Serial.print(BtnX);
      Serial.print(" ,");
      Serial.println(BtnY);
-//    d->fillCircle(BtnX, BtnY, 2, COLOR65K_RED);
+    d->fillCircle(BtnX, BtnY, 2, COLOR65K_RED);
 #endif
   }
 }

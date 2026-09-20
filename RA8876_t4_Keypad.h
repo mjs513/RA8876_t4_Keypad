@@ -49,7 +49,10 @@
 
 #include "RA8876_Config_SPI.h"
 #include <RA8876_t3.h>
+
+#if __has_include("XPT2046_RA8876.h")
 #include <XPT2046_RA8876.h>
+#endif
 
 #define BUTTON_DEBUG false // Set to "true" for button mapping. 
 
@@ -87,8 +90,11 @@
 class  NumberPad {
 		
 public:
-
+#if __has_include("XPT2046_RA8876.h")
 	NumberPad(RA8876_t3 *Display, XPT2046 *Touch);
+#else
+	NumberPad(RA8876_t3 *Display);
+#endif
 	
 	void init(uint16_t BackColor,uint16_t TextColor, uint16_t ButtonColor, uint16_t BorderColor,
 	uint16_t PressedTextColor, uint16_t PressedButtonColor, uint16_t PressedBorderColor,
@@ -143,12 +149,12 @@ public:
 	float value;
 
 private:
-
-	
 	RA8876_t3 *d;
+#if __has_include("XPT2046_RA8876.h")
 	XPT2046  *t;
 	TS_Point p;
-	
+#endif
+
 	struct BUTTON{	
 		uint16_t x;
 		uint16_t y;
@@ -291,9 +297,11 @@ private:
 class  Keyboard {
 		
 public:
-
+#if __has_include("XPT2046_RA8876.h")
 	Keyboard(RA8876_t3 *Display, XPT2046 *Touch);
-
+#else
+	Keyboard(RA8876_t3 *Display);
+#endif
 	void init(uint16_t BackColor,uint16_t TextColor, uint16_t ButtonColor, uint16_t BorderColor, 
 	uint16_t PressedTextColor, uint16_t PressedButtonColor, uint16_t PressedBorderColor,
 	const ILI9341_t3_font_t &ButtonFont);
@@ -336,9 +344,11 @@ private:
 	};
 	
 	RA8876_t3 *d;
+#if __has_include("XPT2046_RA8876.h")
 	XPT2046 *t;
 	TS_Point p;
-	
+#endif
+/*
 	const int Row0 = 24 - 16;
 	const int Row1 = 54 - 8;
 	const int Row2 = 86 - 8;
@@ -357,6 +367,30 @@ private:
 	const int Col8 = 241 - 12;
 	const int Col9 = 273 - 12;
 	const int Col10 = 305 - 12;
+*/
+#define BUTTON_SIZE 40
+#define ROW_DELTA 44;  //size + 2
+//Ypos
+  const int Row0 = 24;
+  const int Row1 = Row0 + ROW_DELTA ;
+  const int Row2 = Row0 + 2*ROW_DELTA;
+  const int Row3 = Row0 + 3*ROW_DELTA;
+  const int Row4 = Row0 + 4*ROW_DELTA;
+  const int Row5 = Row0 + 5*ROW_DELTA;
+  const int Row6 = Row0 + 2 + 6*ROW_DELTA;
+
+//xpos
+  const int Col1 = 8;
+  const int Col2 = Col1 + ROW_DELTA;
+  const int Col3 = Col1 + 2*ROW_DELTA;
+  const int Col4 = Col1 + 3*ROW_DELTA;
+  const int Col5 = Col1 + 4*ROW_DELTA;
+  const int Col6 = Col1 + 5*ROW_DELTA;
+  const int Col7 = Col1 + 6*ROW_DELTA;
+  const int Col8 = Col1 + 7*ROW_DELTA;
+  const int Col9 = Col1 + 8*ROW_DELTA;
+  const int Col10 = Col1 + 9*ROW_DELTA;
+
 	uint8_t xm = 0, ym = 0;
 	void ProcessTouch();
 	char dn[MAX_KEYBOARD_CHARS+2];
