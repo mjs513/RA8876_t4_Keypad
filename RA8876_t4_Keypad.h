@@ -47,8 +47,15 @@
 	
 #endif
 
+#if __has_include("RA8876_t3.h")
 #include "RA8876_Config_SPI.h"
+#include "RA8876_common.h"
 #include <RA8876_t3.h>
+#elif __has_include("RA8876_t41_p.h")
+#include "RA8876_Config_8080.h"
+#include "RA8876_common.h"
+#include <RA8876_t41_p.h>
+#endif
 
 #if __has_include("XPT2046_RA8876.h")
 #include <XPT2046_RA8876.h>
@@ -92,7 +99,11 @@ class  NumberPad {
 public:
 #if __has_include("XPT2046_RA8876.h")
 	NumberPad(RA8876_t3 *Display, XPT2046 *Touch);
-#else
+#endif
+
+#if __has_include("RA8876_t41_p.h") && defined(USE_FT5206_TOUCH)
+	NumberPad(RA8876_t41_p *Display);
+#elif __has_include("RA8876_t3.h") && defined(USE_FT5206_TOUCH)
 	NumberPad(RA8876_t3 *Display);
 #endif
 	
@@ -149,10 +160,13 @@ public:
 	float value;
 
 private:
-	RA8876_t3 *d;
 #if __has_include("XPT2046_RA8876.h")
 	XPT2046  *t;
 	TS_Point p;
+#elif __has_include("RA8876_t41_p.h") && defined(USE_FT5206_TOUCH)
+	RA8876_t41_p *d;
+#elif __has_include("RA8876_t3.h") && defined(USE_FT5206_TOUCH)
+	RA8876_t3 *d;
 #endif
 
 	struct BUTTON{	
@@ -299,9 +313,12 @@ class  Keyboard {
 public:
 #if __has_include("XPT2046_RA8876.h")
 	Keyboard(RA8876_t3 *Display, XPT2046 *Touch);
-#else
+#elif __has_include("RA8876_t41_p.h") && defined(USE_FT5206_TOUCH)
+	Keyboard(RA8876_t41_p *Display);
+#elif __has_include("RA8876_t3.h") && defined(USE_FT5206_TOUCH)
 	Keyboard(RA8876_t3 *Display);
 #endif
+
 	void init(uint16_t BackColor,uint16_t TextColor, uint16_t ButtonColor, uint16_t BorderColor, 
 	uint16_t PressedTextColor, uint16_t PressedButtonColor, uint16_t PressedBorderColor,
 	const ILI9341_t3_font_t &ButtonFont);
@@ -343,10 +360,13 @@ private:
 		uint8_t w;
 	};
 	
-	RA8876_t3 *d;
 #if __has_include("XPT2046_RA8876.h")
-	XPT2046 *t;
+	XPT2046  *t;
 	TS_Point p;
+#elif __has_include("RA8876_t41_p.h") && defined(USE_FT5206_TOUCH)
+	RA8876_t41_p *d;
+#elif __has_include("RA8876_t3.h") && defined(USE_FT5206_TOUCH)
+	RA8876_t3 *d;
 #endif
 /*
 	const int Row0 = 24 - 16;
@@ -368,8 +388,8 @@ private:
 	const int Col9 = 273 - 12;
 	const int Col10 = 305 - 12;
 */
-#define BUTTON_SIZE 40
-#define ROW_DELTA 44;  //size + 2
+#define BUTTON_SIZE 60
+#define ROW_DELTA 64;  //size + 2
 //Ypos
   const int Row0 = 24;
   const int Row1 = Row0 + ROW_DELTA ;

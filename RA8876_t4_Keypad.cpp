@@ -25,8 +25,16 @@
 */
 
 #include "RA8876_t4_Keypad.h"
+#if __has_include("RA8876_Config_SPI")
 #include "RA8876_Config_SPI.h"
 #include <RA8876_t3.h>
+#elif __has_include("RA8876_Config_8080.h")
+#include "RA8876_Config_8080.h"
+#include <RA8876_t41_p.h>
+#include <math.h>
+#endif
+
+
 #if __has_include("XPT2046_RA8876.h")
 #include <XPT2046_RA8876.h>
 #define XPT
@@ -38,7 +46,13 @@ NumberPad::NumberPad(RA8876_t3 *Display, XPT2046 *Touch) {
   d = Display;
   t = Touch;
 }
-#else
+#endif
+
+#if __has_include("RA8876_Config_8080.h") && defined(USE_FT5206_TOUCH)
+NumberPad::NumberPad(RA8876_t41_p *Display) {
+  d = Display;
+}
+#elif __has_include("RA8876_Config_SPI.h") && defined(USE_FT5206_TOUCH)
 NumberPad::NumberPad(RA8876_t3 *Display) {
   d = Display;
 }
@@ -256,7 +270,7 @@ void NumberPad::getInput() {
   while (KeepIn) {
 #if defined(XPT)
     if (t->isTouching()) {
-#else
+#elif defined(USE_FT5206_TOUCH)
 		if (d->touched()) {
 #endif
 
@@ -490,7 +504,7 @@ bool NumberPad::Pressed(BUTTON *temp) {
 
 #if defined(XPT)
       while (t->isTouching()) {
-#else
+#elif defined(USE_FT5206_TOUCH)
 			while (d->touched()) {
 #endif
         if (((BtnX > temp->x) && (BtnX < (temp->x + temp->w))) && ((BtnY > temp->y) && (BtnY < (temp->y + temp->h)))) {
@@ -525,7 +539,7 @@ void NumberPad::ProcessTouch() {
 	if (t->isTouching()){		  
 		t->getPosition(BtnX, BtnY);
 		
-#else
+#elif defined(USE_FT5206_TOUCH)
 	if (d->touched()) { //if touched(true) detach isr
 		d->updateTS();//now we have the data inside library
     uint16_t coordinates[1][2];//to hold coordinates
@@ -563,7 +577,11 @@ Keyboard::Keyboard(RA8876_t3 *Display, XPT2046 *Touch) {
   d = Display;
   t = Touch;
 }
-#else
+#elif __has_include("RA8876_t41_p.h") && defined(USE_FT5206_TOUCH)
+Keyboard::Keyboard(RA8876_t41_p *Display) {
+  d = Display;
+}
+#elif __has_include("RA8876_t3.h") && defined(USE_FT5206_TOUCH)
 Keyboard::Keyboard(RA8876_t3 *Display) {
   d = Display;
 }
@@ -692,7 +710,7 @@ bool Keyboard::Pressed(BUTTON *temp, uint8_t ASCII) {
 
 #if defined(XPT)
       while (t->isTouching()) {
-#else
+#elif defined(USE_FT5206_TOUCH)
 			while (d->touched()) {
 #endif
         if (((BtnX > temp->x) && (BtnX < (temp->x + (Size * temp->w)))) && ((BtnY > temp->y) && (BtnY < (temp->y + Size)))) {
@@ -887,7 +905,7 @@ strcpy(dn, data);
   while (KeepIn) {
 #if defined(XPT)
     if (t->isTouching()) {
-#else
+#elif defined(USE_FT5206_TOUCH)
 		if (d->touched()) {
 #endif
 
@@ -1100,7 +1118,7 @@ strcpy(dn, data);
       }
 #if defined(XPT)
 			delay(10);
-#else
+#elif defined(USE_FT5206_TOUCH)
       delay(50);
 #endif
     }
@@ -1131,7 +1149,7 @@ void Keyboard::ProcessTouch() {
 	if (t->isTouching()){		  
 		t->getPosition(BtnX, BtnY);
 		
-#else
+#elif defined(USE_FT5206_TOUCH)
 {
 	//if (d->touched()) { //if touched(true) detach isr
 		d->updateTS();//now we have the data inside library
